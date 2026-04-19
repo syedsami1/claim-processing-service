@@ -1,4 +1,4 @@
-﻿# Claim Processing Service (FastAPI + LangGraph)
+﻿# Claim Processing Service 
 
 
 ## Features
