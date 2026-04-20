@@ -9,19 +9,25 @@ from claim_processing_service.utils.nlp_utils import extract_dates, extract_pers
 
 ID_FIELD_PATTERNS = {
     "patient_name": [
+        r"patient_name\s*[:\-]\s*([^\n]+)",
         r"patient\s*name\s*[:\-]\s*([^\n]+)",
         r"name\s*[:\-]\s*([^\n]+)",
     ],
     "dob": [
+        r"dob\s*[:\-]\s*([^\n]+)",
         r"(?:date\s*of\s*birth|dob)\s*[:\-]\s*([^\n]+)",
     ],
     "policy_number": [
+        r"policy_number\s*[:\-]\s*([^\n]+)",
         r"policy\s*(?:no|number)\s*[:\-]\s*([A-Z0-9\-/]+)",
     ],
     "member_id": [
+        r"member_id\s*[:\-]\s*([^\n]+)",
         r"member\s*(?:id|number)\s*[:\-]\s*([A-Z0-9\-/]+)",
     ],
     "id_number": [
+        r"id_number\s*[:\-]\s*([^\n]+)",
+        r"id\s*(?:no|number)?\s*[:\-]\s*([^\n]+)",
         r"(?:aadhaar|aadhar|pan|passport)\s*(?:no|number)?\s*[:\-]\s*([A-Z0-9\-/]+)",
     ],
 }
@@ -46,7 +52,11 @@ def id_agent_node(state: ClaimGraphState) -> ClaimGraphState:
             extracted["dob"] = iso_date_or_raw(dates[0])
 
     # Extract likely policy provider if available.
-    insurer_match = re.search(r"(?:insurer|insurance\s*company)\s*[:\-]\s*([^\n]+)", text, re.IGNORECASE)
+    insurer_match = re.search(
+        r"(?:insurance_provider|insurer|insurance\s*company)\s*[:\-]\s*([^\n]+)",
+        text,
+        re.IGNORECASE,
+    )
     insurer = insurer_match.group(1).strip() if insurer_match else None
 
     return {

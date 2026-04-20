@@ -50,7 +50,9 @@ def segregator_node(state: ClaimGraphState) -> ClaimGraphState:
 
     for page in page_texts:
         page_no = page["page_number"]
-        doc_type = _heuristic_classify(page["text"])
+        page_text = page["text"] or ""
+        page_lower = page_text.lower()
+        doc_type = _heuristic_classify(page_text)
         classified: ClassifiedPage = {
             "page_number": page_no,
             "document_type": doc_type,
@@ -60,8 +62,20 @@ def segregator_node(state: ClaimGraphState) -> ClaimGraphState:
 
         classification.append(classified)
 
+        # Route by primary class.
         if classified["document_type"] in routed_pages:
             routed_pages[classified["document_type"]].append(page)
+
+        # Also route mixed-content pages by section keywords.
+        if any(k in page_lower for k in ["patient_name", "patient name", "dob", "policy_number", "member_id", "id_number"]):
+            if page not in routed_pages["identity_document"]:
+                routed_pages["identity_document"].append(page)
+        if any(k in page_lower for k in ["diagnosis", "admit_date", "admission date", "discharge_date", "discharge date", "physician"]):
+            if page not in routed_pages["discharge_summary"]:
+                routed_pages["discharge_summary"].append(page)
+        if any(k in page_lower for k in ["itemized_lines", "itemized", "total_amount", "room charges", "operating theater", "pharmacy/supplies"]):
+            if page not in routed_pages["itemized_bill"]:
+                routed_pages["itemized_bill"].append(page)
 
     return {
         "classification": classification,

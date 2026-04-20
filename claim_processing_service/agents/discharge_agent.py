@@ -16,8 +16,8 @@ def discharge_agent_node(state: ClaimGraphState) -> ClaimGraphState:
     text = "\n".join(p.get("text", "") for p in pages)
 
     diagnosis = _extract_field(text, r"diagnosis\s*[:\-]\s*([^\n]+)")
-    admit_date = _extract_field(text, r"(?:admit(?:ted)?\s*date|admission\s*date)\s*[:\-]\s*([^\n]+)")
-    discharge_date = _extract_field(text, r"discharge\s*date\s*[:\-]\s*([^\n]+)")
+    admit_date = _extract_field(text, r"(?:admit_date|admit(?:ted)?\s*date|admission\s*date)\s*[:\-]\s*([^\n]+)")
+    discharge_date = _extract_field(text, r"(?:discharge_date|discharge\s*date)\s*[:\-]\s*([^\n]+)")
     physician = _extract_field(text, r"(?:physician|doctor|consultant)\s*[:\-]\s*([^\n]+)")
 
     if not (admit_date and discharge_date):

@@ -1,4 +1,4 @@
-# Claim Processing Service
+﻿# Claim Processing Service
 
 FastAPI + LangGraph implementation for automated claim PDF processing.
 
